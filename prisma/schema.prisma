@@ -11,3 +11,64 @@ generator client {
 datasource db {
   provider = "sqlite"
 }
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("USER") // "USER" | "ADMIN"
+  createdAt    DateTime @default(now())
+
+  favourites  FavouriteCategory[]
+  reminders   Reminder[]
+  cardDesigns CardDesign[]
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  category    String // Music | Workshop | Food | Sports | Kids
+  city        String
+  startsAt    DateTime
+  pricePaise  Int // ₹500 = 50000. Integers avoid float rounding bugs
+  description String
+  imageUrl    String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  reminders   Reminder[]
+  cardDesigns CardDesign[]
+
+  @@index([isActive, startsAt])
+  @@index([category, city, startsAt])
+}
+
+model FavouriteCategory {
+  userId   String
+  category String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, category])
+}
+
+model Reminder {
+  userId    String
+  eventId   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@id([userId, eventId])
+}
+
+model CardDesign {
+  userId    String
+  eventId   String
+  theme     String // "sunset" | "ocean" | "forest"
+  stickers  String   @default("[]") // JSON array, max 3
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@id([userId, eventId])
+}
