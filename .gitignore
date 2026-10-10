@@ -39,3 +39,18 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/app/generated/prisma
+
+# local SQLite database
+*.db
+*.db-journal
+
+# AI tool folders (not part of the app)
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
+
+# allow the example env file
+!.env.example
