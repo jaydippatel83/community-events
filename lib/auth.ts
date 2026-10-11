@@ -7,7 +7,7 @@ export const TOKEN_COOKIE = "token";
 const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
 export type Role = "USER" | "ADMIN";
-export type Session = { userId: string; email: string; role: Role };
+type Session = { userId: string; email: string; role: Role };
 
 const secret = () => {
   const value = process.env.JWT_SECRET;

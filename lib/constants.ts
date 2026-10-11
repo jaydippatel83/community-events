@@ -1,5 +1,4 @@
 export const CATEGORIES = ["Music", "Workshop", "Food", "Sports", "Kids"] as const;
-export type Category = (typeof CATEGORIES)[number];
 
 // Event card designer. The API stores these ids; each client decides how to draw them.
 export const CARD_THEMES = ["sunset", "ocean", "forest"] as const;
