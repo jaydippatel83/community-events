@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { CalendarHeart } from "lucide-react";
@@ -7,14 +8,38 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "./providers/auth-provider";
 
-function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
-  const pathname = usePathname();
-  const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
+const isActive = (href: string, pathname: string | null) =>
+  pathname !== null && (href === "/" ? pathname === "/" : pathname.startsWith(href));
+
+function NavLinks({ pathname }: { pathname: string | null }) {
+  const { user } = useAuth();
+  const links = [
+    { href: "/", label: "Events", show: true },
+    { href: "/feed", label: "My Feed", show: Boolean(user) },
+    { href: "/admin", label: "Admin", show: user?.role === "ADMIN" },
+  ];
   return (
-    <Button asChild variant="ghost" size="lg" className={cn(active && "bg-secondary text-secondary-foreground")}>
-      <Link href={href}>{children}</Link>
-    </Button>
+    <nav className="flex items-center gap-1">
+      {links
+        .filter((l) => l.show)
+        .map((l) => (
+          <Button
+            key={l.href}
+            asChild
+            variant="ghost"
+            size="lg"
+            className={cn(isActive(l.href, pathname) && "bg-secondary text-secondary-foreground")}
+          >
+            <Link href={l.href}>{l.label}</Link>
+          </Button>
+        ))}
+    </nav>
   );
+}
+
+// usePathname() is URL data, which Next.js needs inside <Suspense> (see the header below)
+function NavLinksWithActive() {
+  return <NavLinks pathname={usePathname()} />;
 }
 
 export function Header() {
@@ -36,11 +61,10 @@ export function Header() {
           <span className="hidden sm:inline">Community Events</span>
         </Link>
 
-        <nav className="flex items-center gap-1">
-          <NavLink href="/">Events</NavLink>
-          {user && <NavLink href="/feed">My Feed</NavLink>}
-          {user?.role === "ADMIN" && <NavLink href="/admin">Admin</NavLink>}
-        </nav>
+        {/* Fallback shows the same links without the highlight until the URL is known */}
+        <Suspense fallback={<NavLinks pathname={null} />}>
+          <NavLinksWithActive />
+        </Suspense>
 
         {/* Reserve the space while we check the session so the header doesn't jump */}
         <div className="flex min-w-20 justify-end">

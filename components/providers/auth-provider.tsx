@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { api } from "@/lib/api-client";
 import type { User } from "@/lib/types";
 
@@ -34,4 +35,15 @@ export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
   return ctx;
+}
+
+// For pages that need a logged-in user: sends visitors to /login and brings them back afterwards.
+// (This is only for a smooth UI. The API itself rejects requests without a valid token.)
+export function useRequireUser() {
+  const { user } = useAuth();
+  const router = useRouter();
+  useEffect(() => {
+    if (user === null) router.replace(`/login?next=${encodeURIComponent(location.pathname)}`);
+  }, [user, router]);
+  return user;
 }
