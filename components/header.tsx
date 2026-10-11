@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { CalendarHeart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -44,11 +44,14 @@ function NavLinksWithActive() {
 
 export function Header() {
   const { user, logout } = useAuth();
-  const router = useRouter();
 
   async function handleLogout() {
     await logout();
-    router.push("/");
+    // Full page load instead of router.push: Next.js keeps recently visited pages alive in memory,
+    // and a reload makes sure none of this user's feed, reminders or forms survive the logout.
+    // (Recommended for logout in the Next.js guide "How Next.js preserves UI state with Activity".)
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- full reload is intended here
+    window.location.href = "/";
   }
 
   return (

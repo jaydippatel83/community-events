@@ -73,6 +73,9 @@ function FavouritesPicker({ initial }: { initial: string[] }) {
       router.push("/feed");
     } catch (err) {
       toast.error((err as Error).message);
+    } finally {
+      // Always reset, even on success: Next.js keeps this page alive (hidden) after navigating away,
+      // so without this the button would still be spinning when the user comes back.
       setSaving(false);
     }
   }

@@ -28,7 +28,8 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = new FormData(e.currentTarget);
+    const formEl = e.currentTarget;
+    const form = new FormData(formEl);
     setSubmitting(true);
     setError(null);
     try {
@@ -37,10 +38,14 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         json: { email: form.get("email"), password: form.get("password") },
       });
       setUser(user);
+      // Next.js keeps this page alive (hidden) after we leave it, so clear the typed
+      // email/password now; otherwise they'd still be filled in on the next visit.
+      formEl.reset();
       // New users pick favourite categories first; admins go to their dashboard
       router.push(!isLogin ? "/favourites" : (next ?? (user.role === "ADMIN" ? "/admin" : "/")));
     } catch (err) {
       setError((err as Error).message);
+    } finally {
       setSubmitting(false);
     }
   }
