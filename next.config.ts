@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  agentRules: false, // don't let `next dev` generate AGENTS.md
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {
