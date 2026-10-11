@@ -40,6 +40,18 @@ The admin can be changed with `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env` before 
 
 15 events across all 5 categories and 5 cities: **9 active and upcoming**, **3 inactive** and **3 in the past**. Prices range from free to ₹1,50,000. Try **Music + Coimbatore + "night"**, which returns 2 events.
 
+### Deploying (Vercel + Turso)
+
+Vercel's filesystem is temporary, so production uses **Turso** (hosted SQLite) through the same Prisma libSQL adapter. Locally nothing changes: `DATABASE_URL="file:./dev.db"`.
+
+```bash
+turso db create community-events
+turso db shell community-events < prisma/migrations/20261010152704_init/migration.sql   # create tables
+DATABASE_URL="$(turso db show community-events --url)" TURSO_AUTH_TOKEN="$(turso db tokens create community-events)" npx tsx prisma/seed.ts
+```
+
+In Vercel, set `DATABASE_URL`, `TURSO_AUTH_TOKEN` and `JWT_SECRET`, then deploy.
+
 ---
 
 ## API
