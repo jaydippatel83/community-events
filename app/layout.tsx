@@ -15,7 +15,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${jakarta.variable} h-full font-sans antialiased`}>
-      <body className="flex min-h-full flex-col">
+      {/* Browser extensions (e.g. ColorZilla, Grammarly) add attributes to <body> before React loads */}
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
         <AuthProvider>
           <Header />
           <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:py-10">{children}</main>
