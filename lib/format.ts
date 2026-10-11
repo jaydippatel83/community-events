@@ -27,5 +27,7 @@ export function formatEventDate(iso: string | Date) {
   const parts = Object.fromEntries(
     dateParts.formatToParts(new Date(iso)).map((p) => [p.type, p.value]),
   );
-  return `${parts.weekday}, ${parts.day} ${parts.month}, ${parts.hour}:${parts.minute} ${parts.dayPeriod.toUpperCase()}`;
+  // Newer Intl versions write September as "Sept"; keep every month at 3 letters ("Sep", "Oct")
+  const month = parts.month.slice(0, 3);
+  return `${parts.weekday}, ${parts.day} ${month}, ${parts.hour}:${parts.minute} ${parts.dayPeriod.toUpperCase()}`;
 }
