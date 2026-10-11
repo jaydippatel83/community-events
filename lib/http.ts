@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import { unstable_rethrow } from "next/navigation";
 import { ZodError } from "zod";
 
 export class HttpError extends Error {
@@ -13,6 +14,7 @@ export function handler<Ctx>(fn: (req: NextRequest, ctx: Ctx) => Promise<Respons
     try {
       return await fn(req, ctx);
     } catch (err) {
+      unstable_rethrow(err); // let Next.js's own internal signals pass through untouched
       if (err instanceof HttpError) {
         return Response.json({ error: err.message }, { status: err.status });
       }
