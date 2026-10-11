@@ -6,6 +6,7 @@ import { ArrowLeft, CalendarDays, IndianRupee, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CategoryBadge, EventImage } from "@/components/event-card";
+import { CardDesigner } from "@/components/card-designer";
 import { RemindButton } from "@/components/remind-button";
 import { EmptyState, ErrorState } from "@/components/states";
 import { useApi } from "@/hooks/use-api";
@@ -71,6 +72,8 @@ export function EventDetail({ params }: { params: Promise<{ id: string }> }) {
       {isPast && <p className="mt-4 text-sm font-medium text-muted-foreground">This event has already happened.</p>}
 
       <p className="mt-6 leading-relaxed whitespace-pre-line">{event.description}</p>
+
+      {event.isActive && <CardDesigner event={event} />}
     </article>
   );
 }
